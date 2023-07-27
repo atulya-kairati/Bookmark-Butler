@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.atulya.bookmarkbutler.model.Link
+import com.atulya.bookmarkbutler.models.Bookmark
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -33,41 +37,47 @@ fun AddLinkPage(
     modifier: Modifier = Modifier
 ) {
 
-    var link by remember { mutableStateOf(Link()) }
+    var bookmark by remember { mutableStateOf(Bookmark()) }
     var tempTag by remember { mutableStateOf("") }
 
-    Surface(
+
+    Scaffold(
         modifier = modifier,
-        color = MaterialTheme.colorScheme.surface
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = null)
+            }
+        }
     ) {
         Column(
             modifier = Modifier
+                .padding(it)
                 .fillMaxSize()
                 .padding(8.dp)
         ) {
             OutlinedTextField(
-                value = link.name,
+                value = bookmark.name,
                 label = { Text("Name") },
                 onValueChange = { text ->
-                    link = link.copy(name = text)
+                    bookmark = bookmark.copy(name = text)
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
-                value = link.url,
+                value = bookmark.url,
                 label = { Text("Url") },
                 onValueChange = { text ->
-                    link = link.copy(url = text)
+                    bookmark = bookmark.copy(url = text)
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
-                value = link.description ?: "",
+                value = bookmark.description ?: "",
                 label = { Text("Description (Optional)") },
                 onValueChange = { text ->
-                    link = link.copy(description = text)
+                    bookmark = bookmark.copy(description = text)
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -77,7 +87,7 @@ fun AddLinkPage(
                 label = { Text("Enter tags") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
-                    link.tags.add(tempTag)
+                    bookmark.tags.add(tempTag)
                     tempTag = ""
                 }),
                 onValueChange = { text ->
@@ -87,7 +97,7 @@ fun AddLinkPage(
             )
 
             FlowRow(modifier = Modifier.padding(8.dp)) {
-                link.tags.forEach { tag ->
+                bookmark.tags.forEach { tag ->
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.primary
@@ -98,9 +108,9 @@ fun AddLinkPage(
                         Text(
                             tag,
                             modifier = Modifier
-                                .padding(vertical = 2.dp, horizontal = 4.dp)
+                                .padding(vertical = 2.dp, horizontal = 8.dp)
                                 .clickable {
-                                    link.tags.remove(tag)
+                                    bookmark.tags.remove(tag)
                                 }
                         )
 

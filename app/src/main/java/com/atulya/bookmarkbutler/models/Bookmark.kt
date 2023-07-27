@@ -1,9 +1,9 @@
-package com.atulya.bookmarkbutler.model
+package com.atulya.bookmarkbutler.models
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
-data class Link(
+data class Bookmark(
     val name: String = "",
     val url: String = "",
     val description: String? = null,
