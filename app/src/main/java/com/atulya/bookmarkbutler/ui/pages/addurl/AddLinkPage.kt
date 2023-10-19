@@ -29,22 +29,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.atulya.bookmarkbutler.models.Bookmark
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddLinkPage(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    addLinkPageViewModel: AddLinkPageViewModel = viewModel(),
+    onSaved: () -> Unit
 ) {
 
-    var bookmark by remember { mutableStateOf(Bookmark()) }
     var tempTag by remember { mutableStateOf("") }
 
 
     Scaffold(
         modifier = modifier,
         floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ }) {
+            FloatingActionButton(onClick = {
+                GlobalScope.launch {
+                    addLinkPageViewModel.saveBookmark()
+                    withContext(Dispatchers.Main) {
+                        onSaved()
+                    }
+                }
+            }) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = null)
             }
         }
@@ -56,28 +68,29 @@ fun AddLinkPage(
                 .padding(8.dp)
         ) {
             OutlinedTextField(
-                value = bookmark.name,
+                value = addLinkPageViewModel.bookmark.name,
                 label = { Text("Name") },
                 onValueChange = { text ->
-                    bookmark = bookmark.copy(name = text)
+                    addLinkPageViewModel.bookmark = addLinkPageViewModel.bookmark.copy(name = text)
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
-                value = bookmark.url,
+                value = addLinkPageViewModel.bookmark.url,
                 label = { Text("Url") },
                 onValueChange = { text ->
-                    bookmark = bookmark.copy(url = text)
+                    addLinkPageViewModel.bookmark = addLinkPageViewModel.bookmark.copy(url = text)
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
-                value = bookmark.description ?: "",
+                value = addLinkPageViewModel.bookmark.description ?: "",
                 label = { Text("Description (Optional)") },
                 onValueChange = { text ->
-                    bookmark = bookmark.copy(description = text)
+                    addLinkPageViewModel.bookmark =
+                        addLinkPageViewModel.bookmark.copy(description = text)
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -87,7 +100,9 @@ fun AddLinkPage(
                 label = { Text("Enter tags") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
-                    bookmark.tags.add(tempTag)
+                    if (!addLinkPageViewModel.bookmark.tags.contains(tempTag)) addLinkPageViewModel.bookmark.tags.add(
+                        tempTag
+                    )
                     tempTag = ""
                 }),
                 onValueChange = { text ->
@@ -97,7 +112,7 @@ fun AddLinkPage(
             )
 
             FlowRow(modifier = Modifier.padding(8.dp)) {
-                bookmark.tags.forEach { tag ->
+                addLinkPageViewModel.bookmark.tags.forEach { tag ->
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.primary
@@ -110,7 +125,7 @@ fun AddLinkPage(
                             modifier = Modifier
                                 .padding(vertical = 2.dp, horizontal = 8.dp)
                                 .clickable {
-                                    bookmark.tags.remove(tag)
+                                    addLinkPageViewModel.bookmark.tags.remove(tag)
                                 }
                         )
 
@@ -125,5 +140,5 @@ fun AddLinkPage(
 @Preview(showSystemUi = true)
 @Composable
 fun AddLinkPagePreview() {
-    AddLinkPage()
+//    AddLinkPage(onSaveBookmark = {})
 }

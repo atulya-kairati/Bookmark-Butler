@@ -7,6 +7,6 @@ import com.atulya.bookmarkbutler.utils.TAG_TABLE_NAME
 
 @Entity(tableName = TAG_TABLE_NAME, indices = [Index(value = ["tag"], unique = true)])
 data class Tag(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val tagId: Int = 0,
     val tag: String,
 )

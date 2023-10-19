@@ -85,4 +85,7 @@ dependencies {
 
     // This is a kapt dep use for code gen. (code generated is visible to A studio)
     kapt 'androidx.room:room-compiler:2.5.2'
+
+    // viewmodel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
 }
